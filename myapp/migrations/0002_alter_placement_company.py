@@ -1,37 +1,72 @@
-# In your migration file
-from django.db import migrations,models
+# -*- coding: utf-8 -*-
+# Generated manually. You can rename the file as per the migration sequence.
 
-def populate_new_foreign_key(apps, schema_editor):
-    Placement = apps.get_model('myapp', 'Placement')
+from django.db import migrations, models
+
+def populate_test_col_with_unique_id(apps, schema_editor):
     Company = apps.get_model('myapp', 'Company')
-    # Iterate through Placement objects
+    Placement = apps.get_model('myapp', 'Placement')
+
+    # Add a new column called test_col in Placement model
+    # for placement in Placement.objects.all():
+    #     placement.test_col = placement.company.unique_id
+    #     placement.save()
+    print("hello")
+    #print schema of Placement
+    #print(Placement._meta.get_fields())
+    
+
     for placement in Placement.objects.all():
         # Retrieve the corresponding company based on c_name
-        company_name = placement.company.c_name
+        company_name = placement.company_id
         company = Company.objects.get(c_name=company_name)
         # Update the new foreign key field with the unique_id
-        placement.company_new_id = company.unique_id
-        placement.save()
+        placement.test_col = company.unique_id
+        placement.save()    
 
+# def remove_old_foreign_key(apps, schema_editor):
+#     Placement = apps.get_model('myapp', 'Placement')
+
+#     # Delete the old column 'company' which is a foreign key
+#     # (This will delete the column and its data)
+#     Placement._meta.get_field('company').remove()
+
+def add_new_foreign_key(apps, schema_editor):
+    Placement = apps.get_model('myapp', 'Placement')
+    Company = apps.get_model('myapp', 'Company')
+
+    # Add a new column called new_col which is a foreign key with to_field=unique_id
+    for placement in Placement.objects.all():
+        placement.new_col_id = placement.test_col
+        placement.save()
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('myapp', '0001_initial'),
+        ('myapp', '0001_initial'), # Update with actual dependency
     ]
 
     operations = [
-        # Step 1: Create a new foreign key field
         migrations.AddField(
             model_name='placement',
-            name='company_new',
-            field=models.ForeignKey(to='myapp.Company', on_delete=models.CASCADE, to_field='unique_id',null=True),
+            name='test_col',
+            field=models.CharField(max_length=100, null=True),
         ),
-        # Step 2: Populate data in the new foreign key field
-        migrations.RunPython(populate_new_foreign_key),
-        # Step 3: Delete the old foreign key field
+        migrations.RunPython(populate_test_col_with_unique_id),
         migrations.RemoveField(
             model_name='placement',
             name='company',
+        ),
+        # migrations.RunPython(remove_old_foreign_key),
+        migrations.AddField(
+            model_name='placement',
+            name='new_col',
+            field=models.ForeignKey(to='myapp.Company', on_delete=models.CASCADE, to_field='unique_id', null=True),
+        ),
+        migrations.RunPython(add_new_foreign_key),
+        
+        migrations.RemoveField(
+            model_name='placement',
+            name='test_col',
         ),
     ]
