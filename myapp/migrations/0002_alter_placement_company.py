@@ -24,12 +24,7 @@ def populate_test_col_with_unique_id(apps, schema_editor):
         placement.test_col = company.id
         placement.save()    
 
-# def remove_old_foreign_key(apps, schema_editor):
-#     Placement = apps.get_model('myapp', 'Placement')
 
-#     # Delete the old column 'company' which is a foreign key
-#     # (This will delete the column and its data)
-#     Placement._meta.get_field('company').remove()
 
 def add_new_foreign_key(apps, schema_editor):
     Placement = apps.get_model('myapp', 'Placement')
@@ -57,7 +52,6 @@ class Migration(migrations.Migration):
             model_name='placement',
             name='company',
         ),
-        # migrations.RunPython(remove_old_foreign_key),
         migrations.AddField(
             model_name='placement',
             name='new_col',
