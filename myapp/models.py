@@ -4,7 +4,6 @@ from django.db import models
 
 
 class Company(models.Model):
-    unique_id = models.CharField(max_length=100, null=True, unique=True)
     c_name = models.CharField(max_length=100,unique=True)
     city = models.CharField(max_length=100)
 
@@ -15,7 +14,7 @@ class Company(models.Model):
 
 class Placement(models.Model):
     p_name = models.CharField(max_length=100)
-    company = models.ForeignKey(Company, related_name='company',on_delete=models.CASCADE, to_field='unique_id', null=True)
+    company = models.ForeignKey(Company, related_name='company',on_delete=models.CASCADE, to_field='c_name', null=True)
 
     # sil=models.ForeignKey(Company, on_delete=models.CASCADE,to_field='city', null=True,db_constraint=False,db_index=False)
     #models.ForeignKey(Company, on_delete=models.CASCADE, blank=True, null=True)
